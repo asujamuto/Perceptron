@@ -2,7 +2,7 @@ import random
 from gui import GUI
 class Perceptron: 
 
-    def __init__(self, weights, threshold, file):
+    def __init__(self, weights, threshold, file, plot_disabled=False):
         self.weights = weights 
         self.threshold = threshold
         self.epoch = 0
@@ -13,6 +13,9 @@ class Perceptron:
         self.final_weights = []
         self.final_threshold = 0
 
+        self.gui = GUI()
+        self.plot_disabled = plot_disabled 
+        
         tmp_vec = []
         with open(file) as f:
             for line in f:
@@ -28,6 +31,9 @@ class Perceptron:
                 """ Zapisz rozwiązanie """
                 self.res_training_file.append(int(v[-1] == "Iris-setosa"))  
 
+        f.close()
+        self.gui.add_info(self.vec_training_file, self.res_training_file)
+        
     
     def compute(self, inputs):
         vec_sum = sum(i*j for i, j in zip(inputs, self.weights))
@@ -36,18 +42,20 @@ class Perceptron:
 
     def learn(self, epochs):
         for i in range(epochs):
-            for i in range(len(self.vec_training_file)):
-                delta = self.res_training_file[i] - self.compute(self.vec_training_file[i])
-                self.weights = [w + delta*x*0.01 for w, x in zip(self.weights, self.vec_training_file[i])]
-                self.threshold = self.threshold + (delta - self.res_training_file[i])*(-1)
-                self.run_gui(self.vec_training_file[i], self.weights)
+            for j in range(len(self.vec_training_file)):
+                delta = self.res_training_file[j] - self.compute(self.vec_training_file[j])
+                self.weights = [w + delta*x*0.01 for w, x in zip(self.weights, self.vec_training_file[j])]
+                # self.threshold = self.threshold + (delta - self.res_training_file[i])*(-1)
+                self.gui.append(self.weights, epoch=i, id=j)
                 
         """  Wagi  """
-        self.final_weights = self.weights[:-1] 
+        self.final_weights = self.weights 
         self.final_threshold = self.threshold
 
         print("Weights: ", self.final_weights)
         print("Threshold: ", self.final_threshold)
+        if self.plot_disabled == False:
+            self.gui.show()
         
     def run_test(self):
         all_vec = []
@@ -76,8 +84,4 @@ class Perceptron:
 
         print("Dobre odpowiedzi: ", good_answ)
         print("Dokładnośc: ", good_answ/len(all_vec))
-        
-    def run_gui(self, data_x, data_w):
-        gui = GUI(data_x,  data_w) 
-        gui.show()
         
