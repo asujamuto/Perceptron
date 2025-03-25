@@ -28,8 +28,9 @@ while True:
     if(choice == 0):
         p.run_test()
     elif(choice == 1):
-        user_vec = list(map(float, input("Podaj vector wejść: ").split()))
-        print("Iris-setosa:    ", p.compute(user_vec))
+        user_vec = list(map(float, input("Podaj vector wejść: ").replace(',', '.').strip().split()))
+        print(user_vec)
+        print("Iris-setosa:    ", p.compute(user_vec) == 1)
 
     elif(choice == 2):
         p.learn(epochs=epochs)
