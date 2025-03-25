@@ -20,10 +20,16 @@ class GUI():
 
     def show(self):
         fig, ax = plt.subplots()
+        x_vec_len = sum([ i**2 for i in self.x_vec[0][:2]])**(1/2)
+        w_vec_len = sum([ i**2 for i in self.w_vec[0][:2]])**(1/2)
+        n = [(i*j)/(w_vec_len) for i, j in zip(self.x_vec[0][:2], self.w_vec[0][:2])] 
+
         V=np.array([self.x_vec[0][:2], 
                     self.w_vec[0][:2],
-                    self.w_vec[0][:2]])
-        origin = np.array([[0,0,0], [0,0,0]])
+                    self.w_vec[0][:2],
+                    n,
+                    [-1*n[0], -1*n[1]]])
+        origin = np.array([[0,0,0,0,0], [0,0,0,0,0]])
         ax.set_xlabel("Wymiar 0")
         ax.set_ylabel("Wymiar 1")
         ax.set_title("Wykres Trenowania")
@@ -31,6 +37,7 @@ class GUI():
         ax.plot(0,0, 'g', label='X wektor')
         ax.plot(0,0, 'b', label='Wagi')
         ax.plot(0,0, 'grey', label='Poprzednie wagi')
+        ax.plot(0,0, 'red', label='Hiperpłaszczyzna decyzyjna')
 
 
         plt.legend(loc='upper left')
@@ -46,15 +53,20 @@ class GUI():
         ax.plot(0,0, 'ok')
         ax.axis('equal')
         ax.grid(which='major')
-        Q = ax.quiver(*origin, V[:, 0], V[:, 1], color=['g', 'b', 'grey'], scale=1)
+        Q = ax.quiver(*origin, V[:, 0], V[:, 1], color=['g', 'b', 'grey', 'red', 'red'], scale=1)
 
         def update_quiver(i,Q):
             if i >= len(self.w_vec) - 1:
                 return Q,
+            x_vec_len = sum([ i**2 for i in self.x_vec[0][:2]])**(1/2)
+            w_vec_len = sum([ i**2 for i in self.w_vec[0][:2]])**(1/2)
+            n = [(i*j)/(w_vec_len) for i, j in zip(self.x_vec[0][:2], self.w_vec[i+1][:2])]
 
             V = np.array([self.x_vec[i][:2], 
                           self.w_vec[i + 1][:2], 
-                          self.w_vec[i][:2]])
+                          self.w_vec[i][:2],
+                          n,
+                          [-1*n[0], -1*n[1]]])
             Q.set_UVC(V[:, 0], V[:, 1])
             return Q,
         

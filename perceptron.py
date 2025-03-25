@@ -2,7 +2,7 @@ import random
 from gui import GUI
 class Perceptron: 
 
-    def __init__(self, weights, threshold, file, plot_disabled=False):
+    def __init__(self, weights, threshold, file, turn_on_plot=False):
         self.weights = weights 
         self.threshold = threshold
         self.epoch = 0
@@ -14,7 +14,7 @@ class Perceptron:
         self.final_threshold = 0
 
         self.gui = GUI()
-        self.plot_disabled = plot_disabled 
+        self.turn_on_plot = turn_on_plot 
         
         tmp_vec = []
         with open(file) as f:
@@ -54,8 +54,9 @@ class Perceptron:
 
         print("Weights: ", self.final_weights)
         print("Threshold: ", self.final_threshold)
-        if self.plot_disabled == False:
+        if self.turn_on_plot == True:
             self.gui.show()
+
         
     def run_test(self):
         all_vec = []
